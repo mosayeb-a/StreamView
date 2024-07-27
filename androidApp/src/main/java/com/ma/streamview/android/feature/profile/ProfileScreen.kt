@@ -114,6 +114,15 @@ fun ProfileScreen(
                         scale = ContentScale.FillWidth
                     )
                 }
+                if (state.videos.isEmpty() && !viewModel.isLoading) {
+                    item {
+                        EmptyScreen(
+                            modifier = Modifier
+                                .padding(top = MaterialTheme.padding.extraLarge),
+                            message = "this channel haven't got any videos!",
+                        )
+                    }
+                }
                 val videos = state.videos
                 if (videos.isNotEmpty()) {
                     items(count = videos.size, key = { videos[it].videoNode.id }) {

@@ -1,0 +1,26 @@
+CREATE TABLE channel (
+ id TEXT NOT NULL PRIMARY KEY,
+ userName TEXT NOT NULL,
+ userLogin TEXT NOT NULL,
+ channelLogo TEXT NOT NULL
+ );
+
+getChannelById:
+SELECT *
+FROM channel
+WHERE id = ?
+LIMIT 1;
+
+getChannels:
+SELECT *
+FROM channel;
+
+unfollowChannel:
+DELETE
+FROM channel
+WHERE id = ?;
+
+followChannel:
+INSERT OR IGNORE INTO
+channel(id,userName,userLogin,channelLogo)
+VALUES (?,?,?,?);

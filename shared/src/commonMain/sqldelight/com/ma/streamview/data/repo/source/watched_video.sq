@@ -1,0 +1,20 @@
+CREATE TABLE watched_video(
+id TEXT NOT NULL ,
+userId TEXT NOT NULL ,
+maxPositionSeen INTEGER NOT NULL,
+slug TEXT NOT NULL
+);
+
+addToWatchedList:
+INSERT INTO
+watched_video(id,userId,maxPositionSeen,slug)
+VALUES (?,?,?,?);
+
+getWatchedList:
+SELECT *
+FROM watched_video;
+
+removeFromWatchedList:
+DELETE
+FROM watched_video
+WHERE id = ?;

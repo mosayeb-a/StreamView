@@ -83,7 +83,7 @@ fun PlayerScreen(
         color = MaterialTheme.colorScheme.background
     ) {
         val state = viewModel.state
-        
+
         val context = LocalContext.current
         val myPlayerView = remember {
             PlayerView(context).also {
@@ -97,36 +97,36 @@ fun PlayerScreen(
         ) {
 //            LoadingScreen(/
 //                displayProgressBar = state.isLoading)
-                StreamVideoPlayer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(.28f),
-                    playerView = myPlayerView,
-                    onPlayPauseClick = {
-                        if (viewModel.isPlaying()) {
-                            viewModel.pause()
-                        } else {
-                            viewModel.play()
-                        }
-                    },
-                    currentPosition = state.currentPosition,
-                    onPositionChanged = {
-                        viewModel.seekTo(it.toLong())
-                    },
-                    totalPosition = state.totalPosition,
-                    updatePositions = {
-                        viewModel.updatePositions()
-                    },
-                    onBackwardClick = {
-                        viewModel.seekBackward()
-                    },
-                    onForwardClick = {
-                        viewModel.seekForward()
-                    },
-                    isPlaying = viewModel.isPlaying(),
-                    isSubOnly = state.isSubOnly,
-                    isLoading = state.isLoading
-                )
+            StreamVideoPlayer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(.28f),
+                playerView = myPlayerView,
+                onPlayPauseClick = {
+                    if (viewModel.isPlaying()) {
+                        viewModel.pause()
+                    } else {
+                        viewModel.play()
+                    }
+                },
+                currentPosition = state.currentPosition,
+                onPositionChanged = {
+                    viewModel.seekTo(it.toLong())
+                },
+                totalPosition = state.totalPosition,
+                updatePositions = {
+                    viewModel.updatePositions()
+                },
+                onBackwardClick = {
+                    viewModel.seekBackward()
+                },
+                onForwardClick = {
+                    viewModel.seekForward()
+                },
+                isPlaying = viewModel.isPlaying(),
+                isSubOnly = state.isSubOnly,
+                isLoading = state.isLoading
+            )
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -147,7 +147,10 @@ fun PlayerScreen(
                         title = title,
                         categoryName = categoryName,
                         tags = tags,
-                        onClick = { onUserClicked.invoke() },
+                        onClick = {
+                            onUserClicked.invoke()
+                            viewModel.pause()
+                        },
                     )
                     ToggleableButton(
                         modifier = Modifier
@@ -212,7 +215,6 @@ fun LoadingDots() {
         }
     }
 }
-
 
 
 @Composable

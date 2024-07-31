@@ -151,11 +151,13 @@ fun StreamVideoPlayer(
             update = {
                 when (lifecycle) {
                     Lifecycle.Event.ON_PAUSE -> {
+                        println("VideoPlayerLifeCycle-> ON_PAUSE")
                         it.onPause()
                         it.player?.pause()
                     }
 
                     Lifecycle.Event.ON_RESUME -> {
+                        println("VideoPlayerLifeCycle-> ON_RESUME")
                         it.onResume()
                         itemsVisibility = true
                         lastInteractionTime = System.currentTimeMillis()

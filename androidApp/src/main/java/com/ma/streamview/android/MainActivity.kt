@@ -1,6 +1,5 @@
 package com.ma.streamview.android
 
-import StreamAppState
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -39,7 +38,6 @@ import com.ma.streamview.android.components.screens.navigation.navigateToEmptySc
 import com.ma.streamview.android.theme.StreamTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import rememberStreamAppState
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

@@ -12,23 +12,25 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
 import com.ma.basloq.android.components.material.padding
 import com.ma.streamview.android.common.UiEvent
 import com.ma.streamview.android.components.screens.EmptyScreen
 import com.ma.streamview.android.components.screens.EmptyScreenAction
 import com.ma.streamview.android.components.screens.LoadingScreen
-import com.ma.streamview.android.feature.profile.navigation.navigateToProfile
 import com.ma.streamview.android.feature.search.navigation.navigateToSearch
-import io.ktor.util.reflect.instanceOf
 
 @Composable
 fun HomeScreen(
@@ -40,6 +42,20 @@ fun HomeScreen(
     navController: NavController
 ) {
     val state = viewModel.state
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                println("checkIfRecommendationReady. HomeScreen resumed")
+                viewModel.checkIfRecommendationReady()
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
     LaunchedEffect(key1 = viewModel.uiEvent) {
         viewModel.uiEvent.collect { event ->
             when (event) {
@@ -220,14 +236,14 @@ fun HomeScreen(
             }
         }
 
-        if (viewModel.isWatchListEmpty && state.topLiveChannels.isNotEmpty() && !viewModel.isLoading) {
-            println("wachlist->" + viewModel.isWatchListEmpty)
-            item {
+        if ((state.recommendedVideos.isEmpty() || state.recommendedStreams.isEmpty())
+            && !viewModel.isLoading && !viewModel.isHomeEmpty
+        ) {
+            item(state.recommendedVideos) {
                 EmptyScreen(
                     message = "you haven't got any recommendation.",
                     modifier = Modifier
-                        .padding(top = MaterialTheme.padding.medium)
-                    ,
+                        .padding(top = MaterialTheme.padding.medium),
                     action = EmptyScreenAction(
                         hint = "Explore",
                         onClick = { navController.navigateToSearch() }),

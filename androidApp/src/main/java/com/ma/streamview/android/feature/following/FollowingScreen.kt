@@ -89,8 +89,6 @@ fun FollowingScreen(
             }
             when (page) {
                 0 -> {
-
-
                     val userMedia = state.liveChannels
                         .filter { it.stream != null }
 

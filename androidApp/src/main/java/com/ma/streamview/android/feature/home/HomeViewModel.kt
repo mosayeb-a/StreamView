@@ -3,6 +3,8 @@ package com.ma.streamview.android.feature.home
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewModelScope
+import com.ma.streamview.StreamException
 import com.ma.streamview.android.common.findMostRepeatedValue
 import com.ma.streamview.android.common.BaseViewModel
 import com.ma.streamview.data.model.gql.common.CategoryEdge
@@ -11,6 +13,7 @@ import com.ma.streamview.data.model.gql.common.UserEdge
 import com.ma.streamview.data.model.gql.common.VideoNode
 import com.ma.streamview.data.repo.MediaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class HomeState(
@@ -36,9 +39,6 @@ class HomeViewModel @Inject constructor(
 //    val uiState: StateFlow<HomeState> = _uiState.asStateFlow()
 
     var state by mutableStateOf(HomeState())
-        private set
-
-    var isWatchListEmpty by mutableStateOf(false)
         private set
 
     val isHomeEmpty: Boolean
@@ -68,7 +68,6 @@ class HomeViewModel @Inject constructor(
             val watchedList = mediaRepository.getWatchedList()
             println("HOMEVIEWMODEL watchedList: $watchedList")
             if (watchedList.isEmpty()) {
-                isWatchListEmpty = true
                 return@runCatchingSafely
             }
             val videosSlugName = watchedList.map { it.slug }
@@ -86,6 +85,36 @@ class HomeViewModel @Inject constructor(
             // get recommended streams
             val streams = mediaRepository.searchStreams(query = mostPopularCategory.toString())
             state = state.copy(recommendedStreams = streams.data?.searchStreams?.streamEdges!!)
+        }
+    }
+
+    fun checkIfRecommendationReady() {
+        viewModelScope.launch {
+            try {
+                // find recommended topic
+                val watchedList = mediaRepository.getWatchedList()
+                println("checkIfRecommendationReady.HOMEVIEWMODEL watchedList: $watchedList")
+                if (watchedList.isEmpty()) {
+                    return@launch
+                }
+                val videosSlugName = watchedList.map { it.slug }
+                println("checkIfRecommendationReady.HOMEVIEWMODEL videosSlugName: $videosSlugName")
+                val mostPopularCategory = findMostRepeatedValue(videosSlugName)
+                println("checkIfRecommendationReady.HOMEVIEWMODEL mostPopularCategory: $mostPopularCategory")
+                state = state.copy(mostPopularCategory = mostPopularCategory.toString())
+
+                // get recommended videos
+                val videos: List<VideoNode> =
+                    mediaRepository.searchVideos("", mostPopularCategory.toString())
+                        .data?.searchFor?.videos?.items!!
+                state = state.copy(recommendedVideos = videos)
+
+                // get recommended streams
+                val streams = mediaRepository.searchStreams(query = mostPopularCategory.toString())
+                state = state.copy(recommendedStreams = streams.data?.searchStreams?.streamEdges!!)
+            } catch (e: StreamException) {
+                println(e)
+            }
         }
     }
 }

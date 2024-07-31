@@ -1,6 +1,9 @@
 **beta preview**
 
-[Watch the video](https://github.com/user-attachments/assets/433cc77a-5ac3-4c50-855f-f499588234e6)
+[Watch the video](https://github.com/user-attachments/assets/8cce1400-a4bf-4e7b-93f4-f50d151c0e85)
+
+
+
 
 StreamView
 This app is designed to provide an exceptional streaming experience with a robust set of features. StreamView leverages modern Android development tools and libraries to ensure high performance, smooth animations, and a responsive UI. Below you'll find an overview of the app's key features and the technologies it uses.

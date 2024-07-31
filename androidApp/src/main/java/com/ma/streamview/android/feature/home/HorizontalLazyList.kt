@@ -140,7 +140,7 @@ fun CategoryHorizontalList(
             ) {
                 StreamImage(
                     modifier = modifier
-                        .padding(start = MaterialTheme.padding.medium)
+//                        .padding(start = MaterialTheme.padding.medium)
                         .height(148.dp)
                         .width(110.dp)
                         .animatedScaleOnTouch { onClick.invoke(index)  },

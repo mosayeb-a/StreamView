@@ -9,7 +9,8 @@ buildscript {
         classpath(MyDependencies.androidBuildTools)
         classpath(MyDependencies.sqlDelightGradlePlugin)
         classpath(MyDependencies.hiltGradlePlugin)
-    }
+        }
+
 }
 
 allprojects {
@@ -22,3 +23,14 @@ allprojects {
 tasks.register("clean", Delete::class) {
     delete(rootProject.buildDir)
 }
+
+//subprojects {
+//    apply(plugin = "java")
+//
+//    java {
+//        toolchain {
+//            languageVersion.set(JavaLanguageVersion.of(17))
+//            implementation.set(JvmImplementation.J9)
+//        }
+//    }
+//}

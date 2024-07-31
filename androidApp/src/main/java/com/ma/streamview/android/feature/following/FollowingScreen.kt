@@ -111,7 +111,7 @@ fun FollowingScreen(
                             )
                         }
                     }
-                    if (state.liveChannels.isEmpty() && viewModel.isLoading) {
+                    if (userMedia.isEmpty() && !viewModel.isLoading) {
                         if (state.channels.isEmpty()) {
                             item {
                                 EmptyScreen(
@@ -147,7 +147,7 @@ fun FollowingScreen(
                             )
                         }
                     }
-                    if (state.channels.isEmpty() && viewModel.isLoading) {
+                    if (state.channels.isEmpty() && !viewModel.isLoading) {
                         item {
                             EmptyScreen(
                                 modifier = Modifier

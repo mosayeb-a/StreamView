@@ -178,7 +178,9 @@ fun HomeScreen(
                     viewersCount = recommendedStreams.map { it.viewersCount },
                     isStream = false,
                     profilePic = recommendedStreams.map { it.broadcaster.profileImageURL },
-                    tags = recommendedStreams.map { it.freeformTags?.map { it.name } ?: emptyList() },
+                    tags = recommendedStreams.map {
+                        it.freeformTags?.map { it.name } ?: emptyList()
+                    },
                     usernames = recommendedStreams.map { it.broadcaster.displayName },
                     categoryNames = recommendedStreams.map { it.category?.displayName.toString() },
                     titles = recommendedStreams.map { it.broadcaster.broadcastSettings.title },
@@ -204,12 +206,12 @@ fun HomeScreen(
             }
         }
 
-        if (viewModel.isHomeEmpty) {
-            item(viewModel.isHomeEmpty) {
+        if (viewModel.isHomeEmpty && !viewModel.isLoading) {
+            item {
                 EmptyScreen(
-                    message = "OOH! check your network connection or vpn please.",
+                    message = "check your network connection or vpn please.",
                     modifier = Modifier
-                        .padding(top = 68.dp)
+                        .padding(top = 58.dp)
                         .height(400.dp),
                     navController = navController,
                     action = EmptyScreenAction(hint = "Retry", onClick = { viewModel.load() }
@@ -218,14 +220,14 @@ fun HomeScreen(
             }
         }
 
-        if (viewModel.isWatchListEmpty && state.topLiveChannels.isNotEmpty()) {
+        if (viewModel.isWatchListEmpty && state.topLiveChannels.isNotEmpty() && !viewModel.isLoading) {
             println("wachlist->" + viewModel.isWatchListEmpty)
             item {
                 EmptyScreen(
-                    message = "you haven't got any recommendation so, you can browse",
+                    message = "you haven't got any recommendation.",
                     modifier = Modifier
-                        .padding(top = 68.dp)
-                        .height(400.dp),
+                        .padding(top = MaterialTheme.padding.medium)
+                    ,
                     action = EmptyScreenAction(
                         hint = "Explore",
                         onClick = { navController.navigateToSearch() }),

@@ -1,6 +1,5 @@
 package com.ma.streamview.android.feature.player
 
-import android.media.MediaMetadataRetriever
 import androidx.annotation.OptIn
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,9 +16,12 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import com.ma.streamview.TwitchHelper
 import com.ma.streamview.android.common.BaseViewModel
+import com.ma.streamview.android.common.UiEvent
+import com.ma.streamview.android.feature.player.navigation.IS_STREAM
 import com.ma.streamview.android.feature.player.navigation.SLUG_NAME
 import com.ma.streamview.android.feature.player.navigation.PLAYER_ID
 import com.ma.streamview.android.feature.player.navigation.PLAYER_URL
+import com.ma.streamview.android.feature.player.navigation.USERNAME
 import com.ma.streamview.android.feature.player.navigation.USER_ID
 import com.ma.streamview.data.repo.MediaRepository
 import com.ma.streamview.data.repo.source.Channel
@@ -52,7 +54,9 @@ class PlayerViewmodel @OptIn(UnstableApi::class) @Inject constructor(
     private val videoThumb = savedStateHandle.get<String>(PLAYER_URL)!!
     private val videoId = savedStateHandle.get<String>(PLAYER_ID)!!
     private val slugName = savedStateHandle.get<String>(SLUG_NAME)!!
+    private val isStream = savedStateHandle.get<Boolean>(IS_STREAM)!!
     private val userId = savedStateHandle.get<String>(USER_ID)!!
+    private val userLogin = savedStateHandle.get<String>(USERNAME)!!
 
     var state by mutableStateOf(PlayerState())
         private set
@@ -95,13 +99,26 @@ class PlayerViewmodel @OptIn(UnstableApi::class) @Inject constructor(
                 is ExoPlaybackException -> {
                     when (error.type) {
                         ExoPlaybackException.TYPE_SOURCE -> {
-                            state = state.copy(isSubOnly = true, isLoading = true)
-                            val urls = TwitchHelper.getVideoUrlMapFromPreviewHelix(url = videoThumb, type = "vod")
-                            val url = urls.values.first()
-                            setMediaSource(url)
-                            state = state.copy(isLoading = false)
-                            state = state.copy(videoUrl = url)
-                            state = state.copy(isSubOnly = false)
+                            if (!isStream) {
+                                state = state.copy(isSubOnly = true, isLoading = true)
+                                val urls = TwitchHelper.getVideoUrlMapFromPreviewHelix(
+                                    url = videoThumb,
+                                    type = "vod"
+                                )
+                                val url = urls.values.first()
+                                setMediaSource(url)
+                                state = state.copy(isLoading = false)
+                                state = state.copy(videoUrl = url)
+                                state = state.copy(isSubOnly = false)
+                            } else {
+                                viewModelScope.launch {
+                                    _uiEvent.send(
+                                        UiEvent.ShowSnackbar(
+                                            message = "Something wrong about playback source"
+                                        )
+                                    )
+                                }
+                            }
                             state =
                                 state.copy(error = "Source error: ${error.sourceException.message}")
                         }
@@ -136,7 +153,11 @@ class PlayerViewmodel @OptIn(UnstableApi::class) @Inject constructor(
     init {
         player.addListener(playerListener)
         runCatchingSafely {
-            val result = mediaRepository.getPlaybackUrl(videoId, "channelLogin")
+            val result = if (!isStream) {
+                mediaRepository.getPlaybackUrl(vodId = videoId, channelName = null)
+            } else {
+                mediaRepository.getPlaybackUrl(channelName = userLogin, vodId = null)
+            }
             state = state.copy(videoUrl = result)
             if (state.videoUrl.isNotEmpty() || state.error.isNotEmpty()) {
                 setMediaSource(state.videoUrl)

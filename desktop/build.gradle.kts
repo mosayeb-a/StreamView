@@ -36,6 +36,8 @@ kotlin {
 
 
                 implementation(project(":shared"))
+//                implementation(project(":androidApp"))
+
             }
         }
 

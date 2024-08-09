@@ -48,14 +48,29 @@ fun NavGraphBuilder.searchScreen(
                     userId = userId,
                     userName = userName,
                     title = description,
-                    tags = tags
+                    tags = tags,
+                    false
                 )
             },
             onUserClicked = { id, login ->
                 println("tagNavUser id: $login")
                 navController.navigateToProfile(id,login)
             },
-            navController = navController
+            navController = navController,
+            onStreamClick = { id, url,slug, logo, userId, userName, description, tags ->
+                navController.navigateToPlayer(
+                    playerId = id,
+                    playerUrl = url,
+                    slugName = slug,
+                    channelLogo = logo,
+                    userId = userId,
+                    userName = userName,
+                    title = description,
+                    tags = tags,
+                    isStream = true
+                )
+            },
+
         )
     }
 }

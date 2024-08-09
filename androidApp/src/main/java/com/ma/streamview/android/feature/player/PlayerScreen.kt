@@ -76,7 +76,8 @@ fun PlayerScreen(
     tags: List<String>? = null,
     title: String,
     onUserClicked: () -> Unit,
-    navController: NavController
+    navController: NavController,
+    isStream: Boolean
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -95,8 +96,6 @@ fun PlayerScreen(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-//            LoadingScreen(/
-//                displayProgressBar = state.isLoading)
             StreamVideoPlayer(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -125,8 +124,10 @@ fun PlayerScreen(
                 },
                 isPlaying = viewModel.isPlaying(),
                 isSubOnly = state.isSubOnly,
-                isLoading = state.isLoading
+                isLoading = state.isLoading,
+                isLive = isStream
             )
+            println("islive: $isStream")
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -178,44 +179,6 @@ fun PlayerScreen(
         }
     }
 }
-
-@Composable
-fun LoadingDots() {
-
-    val dotCount = 3
-    var durationMillis = 300
-
-    val infiniteTransition = rememberInfiniteTransition()
-
-    val dotOpacities = List(dotCount) { index ->
-        infiniteTransition.animateFloat(
-            initialValue = 0.3f,
-            targetValue = 1f,
-            animationSpec = infiniteRepeatable(
-                animation = keyframes {
-                    durationMillis *= dotCount
-                    0.3f at (index * durationMillis) with LinearEasing
-                    1f at (index * durationMillis + durationMillis / 2) with LinearEasing
-                },
-                repeatMode = RepeatMode.Restart
-            ), label = ""
-        )
-    }
-
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        dotOpacities.forEach { opacity ->
-            Text(
-                text = ".",
-                style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier
-            )
-        }
-    }
-}
-
 
 @Composable
 fun ToggleableButton(

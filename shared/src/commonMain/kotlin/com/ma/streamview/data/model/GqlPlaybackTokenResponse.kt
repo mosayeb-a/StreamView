@@ -2,12 +2,12 @@ package com.ma.streamview.data.model
 
 import kotlinx.serialization.Serializable
 
-@kotlinx.serialization.Serializable
-data class GqlVideoTokenResponse(
+@Serializable
+data class GqlPlaybackTokenResponse(
     val data: Data
 )
 
-@kotlinx.serialization.Serializable
+    @Serializable
 data class Data(
     val videoPlaybackAccessToken: AccessToken? = null,
     val streamPlaybackAccessToken: AccessToken? = null

@@ -134,11 +134,7 @@ class MediaRepositoryImpl(
         return !TokenContainer.token.isNullOrEmpty()
     }
 
-    override suspend fun getPlaybackUrl(vodId: String): String {
-        return remoteDataSource.getPlaybackUrl(id = vodId)
-    }
-
-    override suspend fun getPlaybackUrl(vodId: String, channelName: String): String {
+    override suspend fun getPlaybackUrl(vodId: String?, channelName: String?): String {
         return remoteDataSource.getPlaybackUrl(vodId = vodId, channelName = channelName)
     }
 

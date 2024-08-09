@@ -11,9 +11,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface MediaRepository {
     suspend fun isUserAuthenticated(): Boolean
-    suspend fun getPlaybackUrl(vodId: String, channelName: String): String
+    suspend fun getPlaybackUrl(vodId: String?, channelName: String?): String
+
     fun loadUserToken()
-    suspend fun getPlaybackUrl(vodId: String): String
 
     suspend fun getFollowedChannels(): List<UserNode>
     suspend fun followChannel(channel: Channel)

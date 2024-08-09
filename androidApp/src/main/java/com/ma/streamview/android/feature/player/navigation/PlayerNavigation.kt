@@ -31,6 +31,7 @@ const val USER_ID = "user_id"
 const val USERNAME = "username"
 const val TITLE = "title"
 const val TAGS_KEY = "tags"
+const val IS_STREAM = "isStream"
 
 
 @SuppressLint("SuspiciousIndentation")
@@ -43,7 +44,9 @@ fun NavController.navigateToPlayer(
     userName: String,
     title: String,
     tags: List<String>? = null,
+    isStream: Boolean,
 ) {
+    // player URL can be null
     val encodedUrl =
         URLEncoder.encode(playerUrl, StandardCharsets.UTF_8.toString())
     val encodedLogoUrl =
@@ -56,7 +59,7 @@ fun NavController.navigateToPlayer(
 
     this.navigate(
         "${Route.PLAYER}/$playerId/$encodedUrl/$encodedSlugName/$encodedLogoUrl/" +
-                "$userId/$userName/$encodedTitle/$tags"
+                "$userId/$userName/$encodedTitle/$tags/$isStream"
     )
 }
 
@@ -67,7 +70,7 @@ fun NavGraphBuilder.playerScreen(
     //rldyy
     composable(
         route = "${Route.PLAYER}/{$PLAYER_ID}/{$PLAYER_URL}/{$SLUG_NAME}" +
-                "/{$CHANNEL_LOGO}/{$USER_ID}/{$USERNAME}/{$TITLE}/{$TAGS_KEY}",
+                "/{$CHANNEL_LOGO}/{$USER_ID}/{$USERNAME}/{$TITLE}/{$TAGS_KEY}/{$IS_STREAM}",
         arguments = listOf(
             navArgument(PLAYER_ID) {
                 type = NavType.StringType
@@ -92,6 +95,9 @@ fun NavGraphBuilder.playerScreen(
             },
             navArgument(TAGS_KEY) {
                 type = NavType.StringArrayType
+            },
+            navArgument(IS_STREAM) {
+                type = NavType.BoolType
             },
         ),
         enterTransition = {
@@ -119,6 +125,8 @@ fun NavGraphBuilder.playerScreen(
         val slugName = navBackStackEntry.arguments?.getString(SLUG_NAME)
         val tags = navBackStackEntry.arguments?.getStringArrayList(TAGS_KEY)
         val title = navBackStackEntry.arguments?.getString(TITLE)
+        val isStream = navBackStackEntry.arguments?.getBoolean(IS_STREAM)
+        println("islive: isStream = navBackStackEntry= $isStream" )
 
         val viewModel: PlayerViewmodel = hiltViewModel(navBackStackEntry)
         PlayerScreen(
@@ -136,6 +144,7 @@ fun NavGraphBuilder.playerScreen(
             tags = tags,
             title = title.toString(),
             navController = navController,
+            isStream = isStream ?: false
         )
     }
 }

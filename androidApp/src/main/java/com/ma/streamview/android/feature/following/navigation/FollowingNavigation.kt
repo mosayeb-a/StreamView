@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import com.ma.streamview.android.Route
 import com.ma.streamview.android.feature.following.FollowingScreen
 import com.ma.streamview.android.feature.following.FollowingViewModel
+import com.ma.streamview.android.feature.player.navigation.navigateToPlayer
 import com.ma.streamview.android.feature.profile.navigation.navigateToProfile
 
 fun NavController.navigateToFollowing() {
@@ -28,7 +29,20 @@ fun NavGraphBuilder.followingScreen(
             onUserClicked = { id,login ->
                 navController.navigateToProfile(id,login)
             },
-            navController = navController
+            navController = navController,
+            onStreamClick = { id, url,slug, logo, userId, userName, description, tags ->
+                navController.navigateToPlayer(
+                    playerId = id,
+                    playerUrl = url,
+                    slugName = slug,
+                    channelLogo = logo,
+                    userId = userId,
+                    userName = userName,
+                    title = description,
+                    tags = tags,
+                    isStream = true
+                )
+            },
         )
     }
 }

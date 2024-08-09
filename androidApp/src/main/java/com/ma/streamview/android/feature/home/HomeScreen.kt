@@ -37,6 +37,7 @@ fun HomeScreen(
     viewModel: HomeViewModel,
     snackbarHostState: SnackbarHostState,
     onVideoClick: (id: String, url: String, slugName: String, channelLogo: String, userId: String, userName: String, description: String, tags: List<String>?) -> Unit,
+    onStreamClick: (id: String, url: String, slugName: String, channelLogo: String, userId: String, userName: String, description: String, tags: List<String>?) -> Unit,
     onCategoryClick: (String) -> Unit,
     onUserClick: (id: String, login: String) -> Unit,
     navController: NavController
@@ -117,7 +118,16 @@ fun HomeScreen(
                     },
                     isStream = true,
                     onClickItem = {
-
+                        onStreamClick(
+                            topLiveChannels[it].streamNode.id,
+                            topLiveChannels [it].streamNode.preview,
+                            topLiveChannels[it].streamNode.category?.slug.toString(),
+                            topLiveChannels[it].streamNode.broadcaster.profileImageURL.toString(),
+                            topLiveChannels[it].streamNode.broadcaster.id.toString(),
+                            topLiveChannels[it].streamNode.broadcaster.login.toString(),
+                            topLiveChannels[it].streamNode.broadcaster.broadcastSettings.title,
+                            topLiveChannels[it].streamNode.freeformTags?.map { it.name }
+                        )
                     }
                 )
             }
@@ -165,7 +175,7 @@ fun HomeScreen(
                             recommendedVideos[it].owner?.login.toString()
                         )
                     },
-                    onVideoClick = {
+                    onPlaybackClick = {
                         onVideoClick.invoke(
                             recommendedVideos[it].id,
                             recommendedVideos[it].previewThumbnailURL,
@@ -200,16 +210,16 @@ fun HomeScreen(
                     usernames = recommendedStreams.map { it.broadcaster.displayName },
                     categoryNames = recommendedStreams.map { it.category?.displayName.toString() },
                     titles = recommendedStreams.map { it.broadcaster.broadcastSettings.title },
-                    onVideoClick = {
-                        onVideoClick.invoke(
-                            recommendedStreams[it].id,
-                            recommendedStreams[it].preview,
-                            recommendedStreams[it].category?.displayName ?: "",
-                            recommendedStreams[it].broadcaster.profileImageURL.toString(),
-                            recommendedStreams[it].broadcaster.id.toString(),
-                            recommendedStreams[it].broadcaster.login.toString(),
-                            recommendedStreams[it].broadcaster.broadcastSettings.title,
-                            recommendedStreams[it].freeformTags?.map { tag -> tag.name }
+                    onPlaybackClick = {
+                        onStreamClick(
+                            topLiveChannels[it].streamNode.id,
+                            topLiveChannels [it].streamNode.preview,
+                            topLiveChannels[it].streamNode.category?.slug.toString(),
+                            topLiveChannels[it].streamNode.broadcaster.profileImageURL.toString(),
+                            topLiveChannels[it].streamNode.broadcaster.id.toString(),
+                            topLiveChannels[it].streamNode.broadcaster.login.toString(),
+                            topLiveChannels[it].streamNode.broadcaster.broadcastSettings.title,
+                            topLiveChannels[it].streamNode.freeformTags?.map { it.name },
                         )
                     },
                     onUserClick = {

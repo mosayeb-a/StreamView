@@ -121,12 +121,7 @@ class MediaLocalDataSource(
     }
 
 
-    override suspend fun getPlaybackUrl(vodId: String, channelName: String): String {
-        TODO("Not yet implemented")
-    }
-
-
-    override suspend fun getPlaybackUrl(id: String): String {
+    override suspend fun getPlaybackUrl(vodId: String?, channelName: String?): String {
         TODO("Not yet implemented")
     }
 

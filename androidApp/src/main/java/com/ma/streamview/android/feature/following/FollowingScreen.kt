@@ -40,6 +40,7 @@ fun FollowingScreen(
     viewModel: FollowingViewModel,
     snackbarHostState: SnackbarHostState,
     onUserClicked: (id: String, login: String) -> Unit,
+    onStreamClick: (id: String, url: String, slugName: String, channelLogo: String, userId: String, userName: String, description: String, tags: List<String>?) -> Unit,
     navController: NavController
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -105,7 +106,18 @@ fun FollowingScreen(
                                 slugName = userMedia[it].stream?.category?.displayName.toString(),
                                 viewCount = userMedia[it].stream?.viewersCount ?: 0,
                                 createdAt = userMedia[it].stream?.createdAt.toString(),
-                                onClick = {}
+                                onClick = {
+                                    onStreamClick(
+                                        userMedia[it].stream?.id.toString(),
+                                        userMedia[it].stream?.previewImageURL.toString(),
+                                        userMedia[it].stream?.category?.slug.toString(),
+                                        userMedia[it].profileImageURL.toString(),
+                                        userMedia[it].id.toString(),
+                                        userMedia[it].login.toString(),
+                                        userMedia[it].stream?.broadcaster?.broadcastSettings?.title.toString(),
+                                        userMedia[it].stream?.freeformTags?.map { it.name }
+                                    )
+                                }
                             )
                         }
                     }

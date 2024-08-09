@@ -13,12 +13,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.ma.basloq.android.components.material.padding
 import com.ma.streamview.android.common.animatedScaleOnTouch
 import com.ma.streamview.android.theme.Black
 import com.ma.streamview.android.theme.Red
@@ -60,7 +58,7 @@ fun HorizontalLazyList(
     usernames: List<String?>,
     categoryNames: List<String>,
     titles: List<String>,
-    onVideoClick: (index: Int) -> Unit,
+    onPlaybackClick: (index: Int) -> Unit,
     onUserClick: (index: Int) -> Unit,
 ) {
     val listState = rememberLazyListState()
@@ -87,7 +85,7 @@ fun HorizontalLazyList(
                                 .height(166.56.dp)
                                 .width(310.dp)
                         ) {
-                            onVideoClick.invoke(index)
+                            onPlaybackClick.invoke(index)
                         }
                         StreamLabel(
                             modifier = Modifier.align(Alignment.TopStart),

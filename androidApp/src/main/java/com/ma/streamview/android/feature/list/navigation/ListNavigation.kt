@@ -38,7 +38,8 @@ fun NavGraphBuilder.listScreen(
                     userId = userId,
                     userName = userName,
                     title = description,
-                    tags = tags
+                    tags = tags,
+                    false
                 )
             },
             onUserClicked = { userId ->

@@ -1,6 +1,6 @@
 package com.ma.streamview.services
 
-import com.ma.streamview.data.model.GqlVideoTokenResponse
+import com.ma.streamview.data.model.GqlPlaybackTokenResponse
 import com.ma.streamview.data.model.gql.GQLResponse
 import com.ma.streamview.data.model.gql.user.UserVideosResponse
 
@@ -10,9 +10,9 @@ interface GQLService {
         isLive: Boolean,
         isVod: Boolean,
         channelName: String?,
-        vodID: String,
+        vodID: String?,
         playerType: String
-    ): GqlVideoTokenResponse
+    ): GqlPlaybackTokenResponse
 
     suspend fun searchVideos(cursor: String, query: String): GQLResponse
     suspend fun searchStreams(query: String, first: Int = 30, after: Int? = null): GQLResponse

@@ -42,7 +42,8 @@ fun NavGraphBuilder.profileScreen(
                     userId = userId,
                     userName = userName,
                     title = description,
-                    tags = tags
+                    tags = tags,
+                    false
                 )
             },
             navController = navController

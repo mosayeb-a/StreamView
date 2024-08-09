@@ -12,8 +12,7 @@ interface MediaDataSource {
     fun loadToken()
     suspend fun getAccessToken(): TokenResponse
 
-    suspend fun getPlaybackUrl(vodId: String, channelName: String): String
-    suspend fun getPlaybackUrl(id: String): String
+    suspend fun getPlaybackUrl(vodId: String?, channelName: String?): String
 
 
     // local stuff
@@ -27,7 +26,12 @@ interface MediaDataSource {
     suspend fun removeFromWatchedList(id: String)
 
     // remote stuff
-    suspend fun getTopStream(first: Int, after: Int? = null, tags: List<String>? = null): GQLResponse
+    suspend fun getTopStream(
+        first: Int,
+        after: Int? = null,
+        tags: List<String>? = null
+    ): GQLResponse
+
     suspend fun searchVideos(cursor: String, query: String): GQLResponse
     suspend fun searchStreams(query: String, first: Int = 30, after: Int? = null): GQLResponse
     suspend fun searchChannels(query: String, first: Int = 30, after: Int? = null): GQLResponse

@@ -31,7 +31,8 @@ fun NavGraphBuilder.homeScreen(
                     userId = userId,
                     userName = userName,
                     title = description,
-                    tags = tags
+                    tags = tags,
+                    isStream = false
                 )
             },
             viewModel = viewModel,
@@ -41,9 +42,21 @@ fun NavGraphBuilder.homeScreen(
             },
             navController = navController,
             onUserClick = { id: String, login: String ->
-                navController.navigateToProfile(id,login)
+                navController.navigateToProfile(id, login)
             },
-
-            )
+            onStreamClick = { id, url,slug, logo, userId, userName, description, tags ->
+                navController.navigateToPlayer(
+                    playerId = id,
+                    playerUrl = url,
+                    slugName = slug,
+                    channelLogo = logo,
+                    userId = userId,
+                    userName = userName,
+                    title = description,
+                    tags = tags,
+                    isStream = true
+                )
+            },
+        )
     }
 }

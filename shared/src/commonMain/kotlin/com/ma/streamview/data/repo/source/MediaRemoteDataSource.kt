@@ -10,9 +10,6 @@ import com.ma.streamview.services.GQLService
 import com.ma.streamview.services.HelixService
 import io.ktor.http.URLBuilder
 import io.ktor.http.Url
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.withContext
 import kotlin.random.Random
 
 class MediaRemoteDataSource(
@@ -99,32 +96,47 @@ class MediaRemoteDataSource(
     override suspend fun getAccessToken(): TokenResponse =
         helixService.getAccessToken()
 
-    override suspend fun getPlaybackUrl(id: String): String {
-        val supportedCodecs = "av1,h265,h264"
-        val playerType = "channel_home_live"
-        val data = gqlService.getPlaybackAccessToken(
-            isLive = false,
-            isVod = true,
-            channelName = null,
-            vodID = id,
-            playerType = playerType
-        ).data
-        val accessToken = data.videoPlaybackAccessToken
-        val url = buildUrl(
-            "https://twitch-downloader-proxy.twitcharchives.workers.dev/$id.m3u8",
-            "allow_source" to "true",
-            "allow_audio_only" to "true",
-            "player_backend" to "mediaplayer",
-            "platform" to if (supportedCodecs.contains("av1", true)) "web" else null,
-            "sig" to accessToken?.signature,
-            "supported_codecs" to supportedCodecs,
-            "playlist_include_framerate" to "true",
-            "token" to accessToken?.value
-        )
-        println("mylog: loadVideoUrl-> url: $url")
-        println("getPlaybackAccessToken: " + accessToken)
-        return url.toString()
-    }
+//    override suspend fun getPlaybackUrl(
+//        vodId: String?,
+//        userLogin: String?
+//    ): String {
+//        val supportedCodecs = "av1,h265,h264"
+//        val accessToken = if (vodId != null) {
+//            gqlService.getPlaybackAccessToken(
+//                isLive = false,
+//                isVod = true,
+//                channelName = null,
+//                vodID = vodId,
+//                playerType = "channel_home_live"
+//            ).data.videoPlaybackAccessToken
+//        } else {
+//            gqlService.getPlaybackAccessToken(
+//                isLive = true,
+//                isVod = false,
+//                channelName = userLogin,
+//                vodID = null,
+//                playerType = "site"
+//            ).data.streamPlaybackAccessToken
+//        }
+
+//        if (vodId != null){
+//            val url = buildUrl(
+//                "https://twitch-downloader-proxy.twitcharchives.workers.dev/$vodId.m3u8",
+//                "allow_source" to "true",
+//                "allow_audio_only" to "true",
+//                "player_backend" to "mediaplayer",
+//                "platform" to if (supportedCodecs.contains("av1", true)) "web" else null,
+//                "sig" to accessToken?.signature,
+//                "supported_codecs" to supportedCodecs,
+//                "playlist_include_framerate" to "true",
+//                "token" to accessToken?.value
+//            )
+//        }
+//
+//        println("mylog: loadVideoUrl-> url: $url")
+//        println("getPlaybackAccessToken: " + accessToken)
+//        return url.toString()
+//    }
 //    suspend fun loadStreamPlaylistUrl(
 //        gqlHeaders: Map<String, String>,
 //        channelLogin: String,
@@ -205,31 +217,86 @@ class MediaRemoteDataSource(
 //    }
 
 
-
-    override suspend fun getPlaybackUrl(vodId: String, channelName: String): String {
+    override suspend fun getPlaybackUrl(vodId: String?, channelName: String?): String {
+        println("streamURLTag. in getPlaybackUrl")
         val supportedCodecs = "av1,h265,h264"
-        val playerType = "channel_home_live"
-        val data = gqlService.getPlaybackAccessToken(
-            isLive = false,
-            isVod = true,
-            channelName = null,
-            vodID = vodId,
-            playerType = playerType
-        ).data
-        val accessToken = data.videoPlaybackAccessToken
-        val url = buildUrl(
-            "https://usher.ttvnw.net/vod/$vodId.m3u8",
+        val accessToken = if (vodId != null) {
+            gqlService.getPlaybackAccessToken(
+                isLive = false,
+                isVod = true,
+                channelName = null,
+                vodID = vodId,
+                playerType = "channel_home_live"
+            ).data.videoPlaybackAccessToken
+        } else {
+            gqlService.getPlaybackAccessToken(
+                isLive = true,
+                isVod = false,
+                channelName = channelName,
+                vodID = null,
+                playerType = "site"
+            ).data.streamPlaybackAccessToken
+        }
+        println("streamURLTag. accessToken: $accessToken")
+        val baseUrl = if (vodId != null) {
+            "https://usher.ttvnw.net/vod/$vodId.m3u8"
+        } else {
+            "https://usher.ttvnw.net/api/channel/hls/$channelName.m3u8"
+        }
+        println("streamURLTag. baseUrl: $baseUrl")
+
+        val queryParams = listOfNotNull(
             "allow_source" to "true",
             "allow_audio_only" to "true",
             "p" to Random.nextInt(9999999).toString(),
             "platform" to if (supportedCodecs.contains("av1", true)) "web" else null,
             "sig" to accessToken?.signature,
             "supported_codecs" to supportedCodecs,
-            "token" to accessToken?.value
+            "token" to accessToken?.value,
+            if (vodId == null) "fast_bread" to "true" else null
         )
-        println("mylog: loadVideoUrl-> url: $url")
+
+        val url = buildUrl(baseUrl, *queryParams.toTypedArray()).toString()
+        println("streamURLTag. url: $url")
+
+        println("mylog: loadVideoUrl: $url")
         println("getPlaybackAccessToken: " + accessToken)
-        return url.toString()
+        return url
+    }
+
+    suspend fun getPlaybackUrlStream(channelName: String?): String {
+        println("streamURLTag. in getPlaybackUrl")
+        val supportedCodecs = "av1,h265,h264"
+        val accessToken =
+            gqlService.getPlaybackAccessToken(
+                isLive = true,
+                isVod = false,
+                channelName = channelName,
+                vodID = null,
+                playerType = "site"
+            ).data.streamPlaybackAccessToken
+        println("streamURLTag. accessToken: $accessToken")
+        val baseUrl =
+            "https://usher.ttvnw.net/api/channel/hls/$channelName.m3u8"
+        println("streamURLTag. baseUrl: $baseUrl")
+
+        val queryParams = listOfNotNull(
+            "allow_source" to "true",
+            "allow_audio_only" to "true",
+            "p" to Random.nextInt(9999999).toString(),
+            "platform" to if (supportedCodecs.contains("av1", true)) "web" else null,
+            "sig" to accessToken?.signature,
+            "supported_codecs" to supportedCodecs,
+            "token" to accessToken?.value,
+            "fast_bread" to "true"
+        )
+
+        val url = buildUrl(baseUrl, *queryParams.toTypedArray()).toString()
+        println("streamURLTag. url: $url")
+
+        println("mylog: loadVideoUrl: $url")
+        println("getPlaybackAccessToken: " + accessToken)
+        return url
     }
 
     private fun buildUrl(url: String, vararg queryParams: Pair<String, String?>): Url {

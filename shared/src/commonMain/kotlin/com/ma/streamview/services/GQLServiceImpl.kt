@@ -2,7 +2,7 @@ package com.ma.streamview.services
 
 import com.ma.streamview.GQL_CLIENT_ID
 import com.ma.streamview.TWITCH_GQL_BASE_URL
-import com.ma.streamview.data.model.GqlVideoTokenResponse
+import com.ma.streamview.data.model.GqlPlaybackTokenResponse
 import com.ma.streamview.data.model.gql.GQLResponse
 import com.ma.streamview.data.model.gql.user.UserVideosResponse
 import com.ma.streamview.exceptionAwareRequest
@@ -11,7 +11,6 @@ import io.ktor.client.request.header
 import io.ktor.client.request.setBody
 import io.ktor.http.HttpMethod
 import kotlinx.serialization.json.add
-import kotlinx.serialization.json.addJsonObject
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -645,10 +644,10 @@ class GQLServiceImpl(private val httpClient: HttpClient) : GQLService {
         isLive: Boolean,
         isVod: Boolean,
         channelName: String?,
-        vodID: String,
+        vodID: String?,
         playerType: String
-    ): GqlVideoTokenResponse {
-        return httpClient.exceptionAwareRequest<GqlVideoTokenResponse>(TWITCH_GQL_BASE_URL) {
+    ): GqlPlaybackTokenResponse {
+        return httpClient.exceptionAwareRequest<GqlPlaybackTokenResponse>(TWITCH_GQL_BASE_URL) {
             method = HttpMethod.Post
             header("Content-Type", "application/json")
             header("Client-Id", GQL_CLIENT_ID)
@@ -668,7 +667,7 @@ class GQLServiceImpl(private val httpClient: HttpClient) : GQLService {
                         put("isLive", isLive)
                         put("login", channelName ?: "")
                         put("isVod", isVod)
-                        put("vodID", vodID)
+                        put("vodID", vodID?:"")
                         put("playerType", playerType)
                     }
                 }

@@ -92,6 +92,7 @@ fun StreamVideoPlayer(
     isPlaying: Boolean,
     isSubOnly: Boolean,
     isLoading: Boolean,
+    isLive: Boolean,
 ) {
     var itemsVisibility by remember { mutableStateOf(true) }
     var lastInteractionTime by remember { mutableStateOf(System.currentTimeMillis()) }
@@ -196,21 +197,23 @@ fun StreamVideoPlayer(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    StreamSlider(
-                        modifier = Modifier
-                            .weight(1.2f),
-                        value = currentPosition.toFloat(),
-                        onValueChange = { position ->
-                            println("VideoPlayer. onValueChangeFinished")
-                            onPositionChanged.invoke(position)
-                            lastInteractionTime = System.currentTimeMillis()
-                        },
-                        valueRange = 0f..(if (totalPosition < 0) 0L else totalPosition).toFloat()
-                            .coerceIn(0f, Float.MAX_VALUE),
-                        onValueChangeFinished = {
-                            println("VideoPlayer. onValueChangeFinished")
-                        },
-                    )
+                    if (!isLive){
+                        StreamSlider(
+                            modifier = Modifier
+                                .weight(1.2f),
+                            value = currentPosition.toFloat(),
+                            onValueChange = { position ->
+                                println("VideoPlayer. onValueChangeFinished")
+                                onPositionChanged.invoke(position)
+                                lastInteractionTime = System.currentTimeMillis()
+                            },
+                            valueRange = 0f..(if (totalPosition < 0) 0L else totalPosition).toFloat()
+                                .coerceIn(0f, Float.MAX_VALUE),
+                            onValueChangeFinished = {
+                                println("VideoPlayer. onValueChangeFinished")
+                            },
+                        )
+                    }
                     Text(
                         modifier = Modifier
                             .weight(.6f),
@@ -243,7 +246,8 @@ fun StreamVideoPlayer(
         if (isLoading) {
             CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center),
-                color = Color.White)
+                color = Color.White
+            )
         }
         AnimatedVisibility(
             visible = isSubOnly,

@@ -47,6 +47,7 @@ fun SearchScreen(
     viewModel: SearchViewModel,
     snackbarHostState: SnackbarHostState,
     onVideoClick: (videoId: String, videoThumbUrl: String, slugName: String, channelLogo: String, userId: String, userName: String, description: String, tags: List<String>) -> Unit,
+    onStreamClick: (id: String, url: String, slugName: String, channelLogo: String, userId: String, userName: String, description: String, tags: List<String>?) -> Unit,
     onUserClicked: (id: String, login: String) -> Unit,
     navController: NavController
 ) {
@@ -177,7 +178,16 @@ fun SearchScreen(
                                 viewCount = stream.viewersCount,
                                 createdAt = stream.createdAt,
                                 onClick = {
-                                    // on stream click
+                                    onStreamClick(
+                                        stream.id,
+                                        stream.preview,
+                                        stream.category?.slug.toString(),
+                                        stream.broadcaster.profileImageURL.toString(),
+                                        stream.broadcaster.id.toString(),
+                                        stream.broadcaster.login.toString(),
+                                        stream.broadcaster.broadcastSettings.title,
+                                        stream.freeformTags?.map { it.name }
+                                    )
                                 }
                             )
                             println("searchViewModel: createat" + stream.createdAt)
